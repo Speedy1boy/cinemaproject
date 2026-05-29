@@ -4,7 +4,7 @@ import { Box, Typography, TextField, Button, Stack, InputAdornment, IconButton, 
 import { Eye, EyeOff } from 'lucide-react';
 import api from '../api/axiosConfig';
 
-export default function Login({ onLogin }) { // <--- Добавлен пропс onLogin
+export default function Login({ onLogin }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
