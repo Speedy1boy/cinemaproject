@@ -28,11 +28,27 @@ export const getTheme = (mode) => createTheme({
   },
   components: {
     MuiCssBaseline: {
-      styleOverrides: {
-        body: {
-          transition: 'background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease',
-        },
-      },
+      styleOverrides: `
+        body {
+          transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+          -webkit-box-shadow: 0 0 0 1000px ${mode === 'light' ? '#ffffff' : '#1e293b'} inset !important;
+          -webkit-text-fill-color: ${mode === 'light' ? '#0f172a' : '#f8fafc'} !important;
+          caret-color: ${mode === 'light' ? '#0f172a' : '#f8fafc'} !important;
+          border: none !important;
+          outline: none !important;
+          border-radius: 0 !important;
+          transition: background-color 5000s ease-in-out 0s, box-shadow 0.3s ease, -webkit-text-fill-color 0.3s ease;
+        }
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear {
+          display: none !important;
+        }
+      `,
     },
   },
 });

@@ -5,6 +5,8 @@ import { getTheme } from './theme';
 
 import Header from './components/Header';
 import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
 
 function App() {
   const getInitialMode = () => {
@@ -50,7 +52,8 @@ function App() {
         <Header mode={mode} toggleTheme={toggleTheme} />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<div>Страница авторизации (TODO)</div>} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/movie/:id" element={<div>Страница фильма (TODO)</div>} />
         </Routes>
       </Box>
