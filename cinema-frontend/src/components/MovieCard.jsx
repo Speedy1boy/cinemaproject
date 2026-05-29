@@ -1,5 +1,5 @@
 import { Box, Typography, Button, Stack, Card, alpha, useTheme } from '@mui/material';
-import { Clock, Star } from 'lucide-react';
+import { Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export default function MovieCard({ movie }) {
@@ -28,47 +28,57 @@ export default function MovieCard({ movie }) {
         height: '360px',
         bgcolor: 'divider',
         transition: 'background-color 0.3s ease',
-        backgroundImage: `url(${movie.poster})`,
+        backgroundImage: movie.poster ? `url(${movie.poster})` : 'none',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         position: 'relative',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
       }}>
-        <Box sx={{
-          position: 'absolute',
-          top: '12px',
-          right: '12px',
-          bgcolor: alpha(theme.palette.common.black, 0.75),
-          color: theme.palette.common.white,
-          px: '8px',
-          py: '4px',
-          borderRadius: '6px',
-          fontSize: '0.75rem',
-          fontWeight: 700,
-          backdropFilter: 'blur(4px)',
-        }}>
-          {movie.ageRating}
-        </Box>
+        {!movie.poster && (
+          <Typography variant="h6" color="text.secondary" fontWeight={700} align="center" sx={{ p: 2, transition: 'color 0.3s ease', opacity: 0.5 }}>
+            {movie.title}
+          </Typography>
+        )}
+        {movie.ageRating && (
+          <Box sx={{
+            position: 'absolute',
+            top: '12px',
+            right: '12px',
+            bgcolor: alpha(theme.palette.common.black, 0.75),
+            color: theme.palette.common.white,
+            px: '8px',
+            py: '4px',
+            borderRadius: '6px',
+            fontSize: '0.75rem',
+            fontWeight: 700,
+            backdropFilter: 'blur(4px)',
+          }}>
+            {movie.ageRating}
+          </Box>
+        )}
       </Box>
 
       <Box sx={{ p: '20px', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-        <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, mb: '4px', color: 'text.primary' }}>
+        <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, mb: '4px', color: 'text.primary', transition: 'color 0.3s ease' }}>
           {movie.title}
         </Typography>
-        <Typography sx={{ fontSize: '0.85rem', mb: '16px', color: 'text.secondary' }}>
-          {movie.genre}
-        </Typography>
+        {movie.genre && (
+          <Typography sx={{ fontSize: '0.85rem', mb: '16px', color: 'text.secondary', transition: 'color 0.3s ease' }}>
+            {movie.genre}
+          </Typography>
+        )}
 
         <Box sx={{ mt: 'auto' }}>
-          <Stack direction="row" spacing={'16px'} sx={{ color: 'text.secondary' }}>
-            <Stack direction="row" alignItems="center" spacing={'6px'}>
-              <Clock size={20} />
-              <Typography sx={{ fontSize: '0.85rem', color: 'inherit' }}>{movie.duration} мин</Typography>
+          {movie.duration && (
+            <Stack direction="row" spacing={'16px'} sx={{ color: 'text.secondary', transition: 'color 0.3s ease' }}>
+              <Stack direction="row" alignItems="center" spacing={'6px'}>
+                <Clock size={20} />
+                <Typography sx={{ fontSize: '0.85rem', color: 'inherit' }}>{movie.duration} мин</Typography>
+              </Stack>
             </Stack>
-            <Stack direction="row" alignItems="center" spacing={'6px'}>
-              <Star size={20} />
-              <Typography sx={{ fontSize: '0.85rem', color: 'inherit' }}>{movie.rating}</Typography>
-            </Stack>
-          </Stack>
+          )}
 
           <Button 
             variant="outlined" 

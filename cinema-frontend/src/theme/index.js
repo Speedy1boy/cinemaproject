@@ -32,6 +32,9 @@ export const getTheme = (mode) => createTheme({
         body {
           transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
+        .MuiAlert-root {
+          transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease !important;
+        }
         input:-webkit-autofill,
         input:-webkit-autofill:hover,
         input:-webkit-autofill:focus,

@@ -20,6 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3001")
 public class AdminController {
 
     private final CinemaHallService cinemaHallService;

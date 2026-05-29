@@ -26,7 +26,8 @@ export default function Login({ onLogin }) {
       
       if (token) {
         localStorage.setItem('token', token);
-        if (onLogin) onLogin();
+        localStorage.setItem('username', username); // Сохраняем имя пользователя
+        if (onLogin) onLogin(username); // Передаем имя в родительский компонент
         navigate('/');
       } else {
         setError('Не удалось получить токен авторизации');
