@@ -22,7 +22,7 @@ export default function Header({ mode, toggleTheme }) {
           sx={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', color: 'primary.main', fontSize: '1.25rem', fontWeight: 700 }}
         >
           <Popcorn size={24} />
-          <Typography sx={{ fontSize: '1.25rem', fontWeight: 700 }}>NaumenCinema</Typography>
+          <Typography sx={{ fontSize: '1.25rem', fontWeight: 700 }}>Naumen Cinema</Typography>
         </Box>
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
