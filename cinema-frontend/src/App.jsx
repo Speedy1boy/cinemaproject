@@ -21,6 +21,7 @@ function App() {
   };
 
   const [mode, setMode] = useState(getInitialMode);
+  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
 
   const toggleTheme = () => {
     setMode((prevMode) => {
@@ -28,6 +29,15 @@ function App() {
       localStorage.setItem('app-theme', newMode);
       return newMode;
     });
+  };
+
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsAuthenticated(false);
   };
 
   useEffect(() => {
@@ -49,10 +59,15 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline /> 
       <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        <Header mode={mode} toggleTheme={toggleTheme} />
+        <Header 
+          mode={mode} 
+          toggleTheme={toggleTheme} 
+          isAuthenticated={isAuthenticated} 
+          onLogout={handleLogout} 
+        />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<Login onLogin={handleLogin} />} />
           <Route path="/register" element={<Register />} />
           <Route path="/movie/:id" element={<div>Страница фильма (TODO)</div>} />
         </Routes>

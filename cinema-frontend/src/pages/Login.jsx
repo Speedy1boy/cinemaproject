@@ -4,7 +4,7 @@ import { Box, Typography, TextField, Button, Stack, InputAdornment, IconButton, 
 import { Eye, EyeOff } from 'lucide-react';
 import api from '../api/axiosConfig';
 
-export default function Login() {
+export default function Login({ onLogin }) { // <--- Добавлен пропс onLogin
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -19,10 +19,14 @@ export default function Login() {
     
     try {
       const res = await api.post('/auth/signin', { username, password });
-      const token = res.data.token || res.data.accessToken || res.data.jwt;
+      
+      const token = typeof res.data === 'string' 
+        ? res.data 
+        : (res.data.token || res.data.accessToken || res.data.jwt);
       
       if (token) {
         localStorage.setItem('token', token);
+        if (onLogin) onLogin();
         navigate('/');
       } else {
         setError('Не удалось получить токен авторизации');
