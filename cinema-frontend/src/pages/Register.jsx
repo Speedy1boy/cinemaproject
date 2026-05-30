@@ -33,7 +33,7 @@ export default function Register() {
       borderRadius: '12px', 
       bgcolor: 'background.paper',
       transition: 'background-color 0.3s ease, border-color 0.3s ease',
-      overflow: 'hidden', // Обрезаем всё лишнее по краям
+      overflow: 'hidden',
     },
     '& .MuiOutlinedInput-input': { 
       bgcolor: 'transparent !important',

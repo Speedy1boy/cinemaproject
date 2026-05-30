@@ -389,7 +389,7 @@ export default function AdminPanel() {
         )}
       </Container>
 
-      <Dialog open={openMovie} onClose={() => setOpenMovie(false)} maxWidth="sm" fullWidth>
+      <Dialog open={openMovie} onClose={() => setOpenMovie(false)} maxWidth="sm" fullWidth disableRestoreFocus>
         <DialogTitle sx={{ color: 'text.primary', transition: 'color 0.3s ease' }}>Добавить фильм</DialogTitle>
         <DialogContent>
           {dialogError && <Alert severity="warning" sx={{ mb: 2 }}>{dialogError}</Alert>}
@@ -407,7 +407,7 @@ export default function AdminPanel() {
         </DialogActions>
       </Dialog>
 
-      <Dialog open={openEditMovie} onClose={() => setOpenEditMovie(false)} maxWidth="sm" fullWidth>
+      <Dialog open={openEditMovie} onClose={() => setOpenEditMovie(false)} maxWidth="sm" fullWidth disableRestoreFocus>
         <DialogTitle sx={{ color: 'text.primary', transition: 'color 0.3s ease' }}>Редактировать фильм</DialogTitle>
         <DialogContent>
           {dialogError && <Alert severity="warning" sx={{ mb: 2 }}>{dialogError}</Alert>}
@@ -425,7 +425,7 @@ export default function AdminPanel() {
         </DialogActions>
       </Dialog>
 
-      <Dialog open={openHall} onClose={() => setOpenHall(false)} maxWidth="sm" fullWidth>
+      <Dialog open={openHall} onClose={() => setOpenHall(false)} maxWidth="sm" fullWidth disableRestoreFocus>
         <DialogTitle sx={{ color: 'text.primary', transition: 'color 0.3s ease' }}>Добавить зал</DialogTitle>
         <DialogContent>
           {dialogError && <Alert severity="warning" sx={{ mb: 2 }}>{dialogError}</Alert>}
@@ -441,7 +441,7 @@ export default function AdminPanel() {
         </DialogActions>
       </Dialog>
 
-      <Dialog open={openSession} onClose={() => setOpenSession(false)} maxWidth="sm" fullWidth>
+      <Dialog open={openSession} onClose={() => setOpenSession(false)} maxWidth="sm" fullWidth disableRestoreFocus>
         <DialogTitle sx={{ color: 'text.primary', transition: 'color 0.3s ease' }}>Добавить сеанс</DialogTitle>
         <DialogContent>
           {dialogError && <Alert severity="warning" sx={{ mb: 2 }}>{dialogError}</Alert>}

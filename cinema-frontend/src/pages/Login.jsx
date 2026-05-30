@@ -53,17 +53,13 @@ export default function Login({ onLogin }) {
     '& .MuiOutlinedInput-root': { 
       borderRadius: '12px', 
       bgcolor: 'background.paper',
-      transition: 'background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease',
+      transition: 'background-color 0.3s ease, border-color 0.3s ease',
       overflow: 'hidden',
     },
     '& .MuiOutlinedInput-input': { 
       bgcolor: 'transparent !important',
       border: 'none !important',
       borderRadius: '0 !important',
-      transition: 'color 0.3s ease',
-    },
-    '& .MuiInputLabel-root': {
-      transition: 'color 0.3s ease',
     },
     '& .MuiInputLabel-asterisk': { display: 'none' },
   };
