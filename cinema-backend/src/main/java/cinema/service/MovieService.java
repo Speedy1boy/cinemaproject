@@ -2,7 +2,9 @@ package cinema.service;
 
 import cinema.dto.MovieDTO;
 import cinema.entity.Movie;
+import cinema.entity.Session;
 import cinema.repository.MovieRepository;
+import cinema.repository.SessionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,9 +13,12 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class MovieService {
 
     private final MovieRepository movieRepository;
+    private final SessionRepository sessionRepository;
+    private final SessionService sessionService;
 
     public List<Movie> getAllMovies() {
         return movieRepository.findAll();
@@ -35,10 +40,19 @@ public class MovieService {
     }
 
     public void deleteMovie(Long id) {
+        if (!movieRepository.existsById(id)) {
+            throw new RuntimeException("Фильм не найден");
+        }
+
+        List<Session> movieSessions = sessionRepository.findByMovieId(id);
+
+        for (Session session : movieSessions) {
+            sessionService.deleteSession(session.getId());
+        }
+
         movieRepository.deleteById(id);
     }
 
-    @Transactional
     public Movie updateMovie(Long id, MovieDTO dto) {
         Movie movie = movieRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Фильм не найден"));

@@ -12,7 +12,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByUserId(Long userId);
 
-    // Получаем список ID мест, которые уже заняты на конкретном сеансе
+    void deleteBySessionId(Long sessionId);
     @Query("SELECT b.seat.id FROM Booking b WHERE b.session.id = :sessionId AND b.status = 'CONFIRMED'")
     List<Long> findReservedSeatIdsBySessionId(@Param("sessionId") Long sessionId);
 }

@@ -48,6 +48,12 @@ public class SessionService {
 
     @Transactional
     public void deleteSession(Long id) {
+        if (!sessionRepository.existsById(id)) {
+            throw new RuntimeException("Сеанс не найден");
+        }
+
+        bookingRepository.deleteBySessionId(id);
+
         sessionRepository.deleteById(id);
     }
 
