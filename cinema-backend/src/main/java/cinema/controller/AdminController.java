@@ -33,9 +33,31 @@ public class AdminController {
         return ResponseEntity.ok(cinemaHallService.createHallWithSeats(cinemaHallDTO));
     }
 
+    @GetMapping("/halls")
+    public ResponseEntity<List<CinemaHall>> getAllHalls() {
+        return ResponseEntity.ok(cinemaHallService.getAllHalls());
+    }
+
+    @DeleteMapping("/halls/{id}")
+    public ResponseEntity<String> deleteHall(@PathVariable Long id) {
+        cinemaHallService.deleteHall(id);
+        return ResponseEntity.ok("Зал успешно удален");
+    }
+
     @PostMapping("/movies")
     public ResponseEntity<Movie> addMovie(@RequestBody MovieDTO movieDTO) {
         return ResponseEntity.ok(movieService.createMovie(movieDTO));
+    }
+
+    @GetMapping("/movies")
+    public ResponseEntity<List<Movie>> getAllMovies() {
+        return ResponseEntity.ok(movieService.getAllMovies());
+    }
+
+    @DeleteMapping("/movies/{id}")
+    public ResponseEntity<String> deleteMovie(@PathVariable Long id) {
+        movieService.deleteMovie(id);
+        return ResponseEntity.ok("Фильм успешно удален");
     }
 
     @PostMapping("/sessions")
@@ -43,14 +65,19 @@ public class AdminController {
         return ResponseEntity.ok(sessionService.createSession(sessionDTO));
     }
 
+    @GetMapping("/sessions")
+    public ResponseEntity<List<Session>> getAllSessions() {
+        return ResponseEntity.ok(sessionService.getAllSessions());
+    }
+
+    @DeleteMapping("/sessions/{id}")
+    public ResponseEntity<String> deleteSession(@PathVariable Long id) {
+        sessionService.deleteSession(id);
+        return ResponseEntity.ok("Сеанс успешно удален");
+    }
+
     @GetMapping("/bookings")
     public ResponseEntity<List<Booking>> getAllBookings() {
         return ResponseEntity.ok(bookingService.getAllBookingsForAdmin());
-    }
-
-    @DeleteMapping("/movies/{id}")
-    public ResponseEntity<String> deleteMovie(@PathVariable Long id) {
-        movieService.deleteMovie(id);
-        return ResponseEntity.ok("Фильм успешно удален");
     }
 }

@@ -4,6 +4,14 @@ import { Box, Typography, TextField, Button, Stack, InputAdornment, IconButton, 
 import { Eye, EyeOff } from 'lucide-react';
 import api from '../api/axiosConfig';
 
+const parseJwt = (token) => {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+};
+
 export default function Login({ onLogin }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -19,16 +27,18 @@ export default function Login({ onLogin }) {
     
     try {
       const res = await api.post('/auth/signin', { username, password });
-      
-      const token = typeof res.data === 'string' 
-        ? res.data 
-        : (res.data.token || res.data.accessToken || res.data.jwt);
+      const token = typeof res.data === 'string' ? res.data : (res.data.token || res.data.accessToken || res.data.jwt);
       
       if (token) {
+        const decoded = parseJwt(token);
+        const role = res.data.role || decoded?.role || decoded?.authorities?.[0] || decoded?.scopes?.[0] || 'USER';
+        
         localStorage.setItem('token', token);
-        localStorage.setItem('username', username); // Сохраняем имя пользователя
-        if (onLogin) onLogin(username); // Передаем имя в родительский компонент
-        navigate('/');
+        localStorage.setItem('username', username);
+        localStorage.setItem('role', role);
+        
+        if (onLogin) onLogin(username, role);
+        navigate(role === 'ADMIN' ? '/admin' : '/');
       } else {
         setError('Не удалось получить токен авторизации');
       }
@@ -43,13 +53,17 @@ export default function Login({ onLogin }) {
     '& .MuiOutlinedInput-root': { 
       borderRadius: '12px', 
       bgcolor: 'background.paper',
-      transition: 'background-color 0.3s ease, border-color 0.3s ease',
+      transition: 'background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease',
       overflow: 'hidden',
     },
     '& .MuiOutlinedInput-input': { 
       bgcolor: 'transparent !important',
       border: 'none !important',
       borderRadius: '0 !important',
+      transition: 'color 0.3s ease',
+    },
+    '& .MuiInputLabel-root': {
+      transition: 'color 0.3s ease',
     },
     '& .MuiInputLabel-asterisk': { display: 'none' },
   };

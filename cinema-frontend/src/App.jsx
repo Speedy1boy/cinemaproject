@@ -11,12 +11,26 @@ import MovieDetails from './pages/MovieDetails';
 import SeatSelection from './pages/SeatSelection';
 import BookingSuccess from './pages/BookingSuccess';
 import MyBookings from './pages/MyBookings';
+import AdminPanel from './pages/AdminPanel';
 
-function ProtectedRoute({ children }) {
+function AdminRoute({ children }) {
   const token = localStorage.getItem('token');
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
+  const role = localStorage.getItem('role');
+  if (!token || role !== 'ADMIN') return <Navigate to="/" replace />;
+  return children;
+}
+
+function PublicUserRoute({ children }) {
+  const role = localStorage.getItem('role');
+  if (role === 'ADMIN') return <Navigate to="/admin" replace />;
+  return children;
+}
+
+function ProtectedUserRoute({ children }) {
+  const token = localStorage.getItem('token');
+  const role = localStorage.getItem('role');
+  if (!token) return <Navigate to="/login" replace />;
+  if (role === 'ADMIN') return <Navigate to="/admin" replace />;
   return children;
 }
 
@@ -30,7 +44,8 @@ function App() {
 
   const [mode, setMode] = useState(getInitialMode);
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
-  const [username, setUsername] = useState(localStorage.getItem('username') || ''); // Берем имя при загрузке
+  const [username, setUsername] = useState(localStorage.getItem('username') || '');
+  const [role, setRole] = useState(localStorage.getItem('role') || 'USER');
 
   const toggleTheme = () => {
     setMode((prevMode) => {
@@ -40,16 +55,19 @@ function App() {
     });
   };
 
-  const handleLogin = (uname) => {
+  const handleLogin = (uname, r) => {
     setIsAuthenticated(true);
-    setUsername(uname); // Обновляем имя в состоянии
+    setUsername(uname);
+    setRole(r);
   };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('username'); // Удаляем имя
+    localStorage.removeItem('username');
+    localStorage.removeItem('role');
     setIsAuthenticated(false);
-    setUsername(''); // Очищаем состояние
+    setUsername('');
+    setRole('USER');
   };
 
   useEffect(() => {
@@ -71,20 +89,26 @@ function App() {
           mode={mode} 
           toggleTheme={toggleTheme} 
           isAuthenticated={isAuthenticated} 
-          username={username} // Передаем имя в хедер
+          username={username}
+          role={role}
           onLogout={handleLogout} 
         />
         <Routes>
-          <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/movie/:id" element={<MovieDetails />} />
-          <Route path="/session/:sessionId/seats" element={<SeatSelection />} />
-          <Route path="/booking/success" element={<BookingSuccess />} />
+          <Route path="/admin" element={
+            <AdminRoute>
+              <AdminPanel />
+            </AdminRoute>
+          } />
+          <Route path="/" element={<PublicUserRoute><Home /></PublicUserRoute>} />
+          <Route path="/movie/:id" element={<PublicUserRoute><MovieDetails /></PublicUserRoute>} />
+          <Route path="/session/:sessionId/seats" element={<PublicUserRoute><SeatSelection /></PublicUserRoute>} />
+          <Route path="/booking/success" element={<PublicUserRoute><BookingSuccess /></PublicUserRoute>} />
           <Route path="/bookings" element={
-            <ProtectedRoute>
+            <ProtectedUserRoute>
               <MyBookings />
-            </ProtectedRoute>
+            </ProtectedUserRoute>
           } />
         </Routes>
       </Box>
