@@ -1,16 +1,31 @@
-# React + Vite
+# Cinema Frontend SPA
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Пользовательский интерфейс системы бронирования билетов. Представляет собой Single Page Application (SPA) с адаптивным дизайном и поддержкой темной/светлой темы.
 
-Currently, two official plugins are available:
+## Стек технологий
+* **Ядро:** React 18
+* **Сборщик:** Vite
+* **Маршрутизация:** React Router v6
+* **UI Библиотека:** Material UI (MUI v5)
+* **HTTP-клиент:** Axios
+* **Иконки:** lucide-react
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Основной функционал
+* **Каталог и расписание:** Просмотр доступных фильмов и сеансов.
+* **Интерактивная схема зала:** Визуальный выбор мест с отображением их статуса в реальном времени (свободно/занято).
+* **Личный кабинет:** Просмотр истории бронирований текущего пользователя.
+* **Панель администратора:** CRUD-операции для управления фильмами.
 
-## React Compiler
+## Локальный запуск (для разработки)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. Убедитесь, что установлен Node.js (версии 18 или выше).
+2. Перейдите в директорию `front` и установите зависимости:
+   ```bash
+   npm install
+   ```
+3. Проверьте файл `src/api/axiosConfig.js`. По умолчанию запросы отправляются на `http://localhost:8081/api`.
+4. Запустите development-сервер:
+   ```bash
+   npm run dev
+   ```
+5. Приложение откроется по адресу `http://localhost:3001` (порт может отличаться в зависимости от настроек vite.config.js).
