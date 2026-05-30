@@ -72,12 +72,10 @@ export default function MovieCard({ movie }) {
 
         <Box sx={{ mt: 'auto' }}>
           {movie.duration && (
-            <Stack direction="row" spacing={'16px'} sx={{ color: 'text.secondary', transition: 'color 0.3s ease' }}>
-              <Stack direction="row" alignItems="center" spacing={'6px'}>
-                <Clock size={20} />
-                <Typography sx={{ fontSize: '0.85rem', color: 'inherit' }}>{movie.duration} мин</Typography>
-              </Stack>
-            </Stack>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'text.secondary', transition: 'color 0.3s ease' }}>
+              <Clock size={20} />
+              <Typography sx={{ fontSize: '0.85rem', color: 'inherit' }}>{movie.duration} мин</Typography>
+            </Box>
           )}
 
           <Button 

@@ -1,5 +1,6 @@
 package cinema.controller;
 
+import cinema.dto.SeatStatusDTO;
 import cinema.entity.Session;
 import cinema.service.SessionService;
 import lombok.RequiredArgsConstructor;
@@ -19,5 +20,10 @@ public class SessionController {
     @GetMapping("/movie/{movieId}")
     public ResponseEntity<List<Session>> getSessionsByMovie(@PathVariable Long movieId) {
         return ResponseEntity.ok(sessionService.getSessionsByMovie(movieId));
+    }
+
+    @GetMapping("/{sessionId}/seats")
+    public ResponseEntity<List<SeatStatusDTO>> getSeatsForSession(@PathVariable Long sessionId) {
+        return ResponseEntity.ok(sessionService.getSeatsStatusForSession(sessionId));
     }
 }

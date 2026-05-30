@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useMemo } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Box, Container, Typography, Button, Snackbar, Alert, CircularProgress } from '@mui/material';
 import { ArrowLeft } from 'lucide-react';
 import api from '../api/axiosConfig';
@@ -7,36 +7,53 @@ import api from '../api/axiosConfig';
 export default function SeatSelection() {
   const location = useLocation();
   const navigate = useNavigate();
-  const session = location.state?.session;
+  const { sessionId } = useParams();
+  
+  const session = location.state?.session; 
 
+  const [seats, setSeats] = useState([]);
   const [selectedSeats, setSelectedSeats] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [booking, setBooking] = useState(false);
   const [notification, setNotification] = useState({ open: false, message: '', severity: 'success' });
 
-  // Генерация зала на основе данных сеанса (если данных нет, ставим 50 по умолчанию)
-  const seatsPerRow = 10;
-  const totalSeats = session?.cinemaHall?.totalSeats || 50;
-  const rows = Math.ceil(totalSeats / seatsPerRow);
-  const price = session?.price || 0;
+  useEffect(() => {
+    const fetchSeats = async () => {
+      setLoading(true);
+      try {
+        const res = await api.get(`/sessions/${sessionId}/seats`);
+        setSeats(res.data);
+      } catch (err) {
+        setNotification({ open: true, message: 'Не удалось загрузить схему зала', severity: 'error' });
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSeats();
+  }, [sessionId]);
 
-  // Временная заглушка: случайно отмечаем 20% мест как занятые
-  const bookedSeats = useMemo(() => {
-    const booked = new Set();
-    for (let i = 0; i < totalSeats * 0.2; i++) {
-      booked.add(Math.floor(Math.random() * totalSeats) + 1);
-    }
-    return booked;
-  }, [totalSeats]);
+  const groupedSeats = useMemo(() => {
+    if (!seats.length) return [];
+    
+    const map = new Map();
+    seats.forEach(seat => {
+      if (!map.has(seat.rowNumber)) {
+        map.set(seat.rowNumber, []);
+      }
+      map.get(seat.rowNumber).push(seat);
+    });
 
-  if (!session) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexGrow: 1, bgcolor: 'background.default' }}>
-        <Alert severity="error">Сеанс не найден. Вернитесь на страницу фильма.</Alert>
-      </Box>
-    );
-  }
+    const sortedRows = Array.from(map.entries()).sort((a, b) => a[0] - b[0]);
+    sortedRows.forEach(([_, rowSeats]) => {
+      rowSeats.sort((a, b) => a.seatNumber - b.seatNumber);
+    });
 
-  const handleSeatClick = (seatId) => {
+    return sortedRows;
+  }, [seats]);
+
+  const handleSeatClick = (seatId, isAvailable) => {
+    if (!isAvailable) return;
+    
     setSelectedSeats((prev) =>
       prev.includes(seatId) ? prev.filter((id) => id !== seatId) : [...prev, seatId]
     );
@@ -51,27 +68,30 @@ export default function SeatSelection() {
 
     setBooking(true);
     try {
-      // Отправляем запрос на бронь для каждого выбранного места
-            await Promise.all(
+      await Promise.all(
         selectedSeats.map((seatId) =>
-          api.post('/bookings', { sessionId: session.id, seatId: seatId })
+          api.post('/bookings', { sessionId: parseInt(sessionId), seatId: seatId })
         )
       );
       
-      // Переход на страницу успешного бронирования с передачей данных
+      const formattedSeats = selectedSeats.map(id => {
+        const seat = seats.find(s => s.id === id);
+        return seat ? `${seat.rowNumber} ряд, ${seat.seatNumber} мес.` : '';
+      }).filter(Boolean).join(', ');
+
       navigate('/booking/success', {
         state: {
-          movie: session.movie,
-          startTime: session.startTime,
-          cinemaHall: session.cinemaHall,
-          selectedSeats: selectedSeats,
-          totalPrice: price * selectedSeats.length
+          movie: session?.movie,
+          startTime: session?.startTime,
+          cinemaHall: session?.cinemaHall,
+          formattedSeats: formattedSeats,
+          totalPrice: (session?.price || 0) * selectedSeats.length
         }
       });
     } catch (err) {
       setNotification({ 
         open: true, 
-        message: err.response?.data?.message || 'Ошибка при бронировании', 
+        message: err.response?.data?.message || 'Ошибка при бронировании. Место могло быть уже занято.', 
         severity: 'error' 
       });
     } finally {
@@ -81,6 +101,14 @@ export default function SeatSelection() {
 
   const formatTime = (isoString) => new Date(isoString).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
   const formatDate = (isoString) => new Date(isoString).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexGrow: 1, bgcolor: 'background.default', transition: 'background-color 0.3s ease' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ bgcolor: 'background.default', flexGrow: 1, transition: 'background-color 0.3s ease', pb: 12 }}>
@@ -95,14 +123,13 @@ export default function SeatSelection() {
 
         <Box sx={{ mb: 4, textAlign: 'center' }}>
           <Typography variant="h5" fontWeight={700} color="text.primary" sx={{ transition: 'color 0.3s ease' }}>
-            {session.movie?.title || 'Фильм'}
+            {session?.movie?.title || 'Фильм'}
           </Typography>
           <Typography color="text.secondary" sx={{ mt: 0.5, transition: 'color 0.3s ease' }}>
-            {formatDate(session.startTime)}, {formatTime(session.startTime)} • {session.cinemaHall?.name || 'Зал'}
+            {session ? `${formatDate(session.startTime)}, ${formatTime(session.startTime)} • ${session.cinemaHall?.name || 'Зал'}` : 'Загрузка...'}
           </Typography>
         </Box>
 
-        {/* Экран */}
         <Box sx={{ display: 'flex', justifyContent: 'center', mb: 6 }}>
           <Box sx={{
             width: '80%',
@@ -120,29 +147,22 @@ export default function SeatSelection() {
           </Box>
         </Box>
 
-        {/* Схема мест */}
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1.5 }}>
-          {Array.from({ length: rows }).map((_, rowIndex) => (
-            <Box key={rowIndex} sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
+          {groupedSeats.map(([rowNumber, rowSeats]) => (
+            <Box key={rowNumber} sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
               <Typography variant="body2" sx={{ width: 20, textAlign: 'center', color: 'text.secondary', transition: 'color 0.3s ease' }}>
-                {rowIndex + 1}
+                {rowNumber}
               </Typography>
               
               <Box sx={{ display: 'flex', gap: 1 }}>
-                {Array.from({ length: seatsPerRow }).map((_, seatIndex) => {
-                  const seatId = rowIndex * seatsPerRow + seatIndex + 1;
-                  if (seatId > totalSeats) return <Box key={seatId} sx={{ width: 36, height: 36 }} />;
+                {rowSeats.map((seat) => {
+                  const isBooked = !seat.available;
+                  const isSelected = selectedSeats.includes(seat.id);
                   
-                  const isBooked = bookedSeats.has(seatId);
-                  const isSelected = selectedSeats.includes(seatId);
-                  
-                  // Проходы после 3-го и 7-го места
-                  const ml = seatIndex === 3 || seatIndex === 7 ? '12px' : '0';
-
                   return (
                     <Box
-                      key={seatId}
-                      onClick={() => !isBooked && handleSeatClick(seatId)}
+                      key={seat.id}
+                      onClick={() => handleSeatClick(seat.id, seat.available)}
                       sx={{
                         width: 36,
                         height: 36,
@@ -154,7 +174,6 @@ export default function SeatSelection() {
                         fontWeight: 600,
                         cursor: isBooked ? 'not-allowed' : 'pointer',
                         transition: 'all 0.2s ease',
-                        ml: ml,
                         ...(isBooked ? {
                           bgcolor: 'action.disabledBackground',
                           color: 'action.disabled',
@@ -177,7 +196,7 @@ export default function SeatSelection() {
                         })
                       }}
                     >
-                      {seatIndex + 1}
+                      {seat.seatNumber}
                     </Box>
                   );
                 })}
@@ -186,7 +205,6 @@ export default function SeatSelection() {
           ))}
         </Box>
 
-        {/* Легенда */}
         <Box sx={{ display: 'flex', justifyContent: 'center', gap: 4, mt: 5, flexWrap: 'wrap' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Box sx={{ width: 20, height: 20, borderRadius: '4px', bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider', transition: 'background-color 0.3s ease, border-color 0.3s ease' }} />
@@ -203,7 +221,6 @@ export default function SeatSelection() {
         </Box>
       </Container>
 
-      {/* Панель бронирования снизу */}
       <Box sx={{
         position: 'fixed',
         bottom: 0,
@@ -223,7 +240,7 @@ export default function SeatSelection() {
               {selectedSeats.length > 0 ? `Выбрано: ${selectedSeats.length} мес.` : 'Выберите места'}
             </Typography>
             <Typography variant="h6" fontWeight={700} color="text.primary" sx={{ transition: 'color 0.3s ease' }}>
-              {selectedSeats.length > 0 ? `${(price * selectedSeats.length).toLocaleString('ru-RU')} ₽` : '—'}
+              {selectedSeats.length > 0 ? `${((session?.price || 0) * selectedSeats.length).toLocaleString('ru-RU')} ₽` : '—'}
             </Typography>
           </Box>
           <Button 
