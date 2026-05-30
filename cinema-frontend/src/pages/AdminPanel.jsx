@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Box, Container, Typography, Tabs, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Stack, IconButton, Alert, CircularProgress, InputAdornment, Autocomplete, useTheme } from '@mui/material';
-import { Plus, Trash2, Search, ArrowUp, ArrowDown } from 'lucide-react';
+import { Plus, Trash2, Search, ArrowUp, ArrowDown, Pencil } from 'lucide-react';
 import api from '../api/axiosConfig';
 
 function TabPanel({ children, value, index }) {
@@ -26,10 +26,12 @@ export default function AdminPanel() {
   const [sortConfig, setSortConfig] = useState({ key: 'id', direction: 'asc' });
 
   const [openMovie, setOpenMovie] = useState(false);
+  const [openEditMovie, setOpenEditMovie] = useState(false);
   const [openHall, setOpenHall] = useState(false);
   const [openSession, setOpenSession] = useState(false);
 
   const [newMovie, setNewMovie] = useState({ title: '', description: '', genre: '', duration: '', ageRating: '' });
+  const [editingMovie, setEditingMovie] = useState({ id: '', title: '', description: '', genre: '', duration: '', ageRating: '' });
   const [newHall, setNewHall] = useState({ name: '', rows: '', seatsPerRow: '' });
   const [newSession, setNewSession] = useState({ startTime: '', price: '' });
 
@@ -87,6 +89,19 @@ export default function AdminPanel() {
   const handleOpenHall = () => { setDialogError(''); setOpenHall(true); };
   const handleOpenSession = () => { setDialogError(''); setSelectedMovie(null); setSelectedHall(null); setNewSession({ startTime: '', price: '' }); setOpenSession(true); };
 
+  const handleOpenEditMovie = (movie) => {
+    setDialogError('');
+    setEditingMovie({
+      id: movie.id,
+      title: movie.title || '',
+      description: movie.description || '',
+      genre: movie.genre || '',
+      duration: movie.duration || '',
+      ageRating: movie.ageRating || ''
+    });
+    setOpenEditMovie(true);
+  };
+
   const handleAddMovie = async () => {
     if (!newMovie.title || !newMovie.description || !newMovie.genre || !newMovie.duration || !newMovie.ageRating) {
       setDialogError('Пожалуйста, заполните все поля');
@@ -97,6 +112,24 @@ export default function AdminPanel() {
       setOpenMovie(false);
       fetchData();
     } catch (err) { setDialogError('Ошибка добавления фильма'); }
+  };
+
+  const handleEditMovie = async () => {
+    if (!editingMovie.title || !editingMovie.description || !editingMovie.genre || !editingMovie.duration || !editingMovie.ageRating) {
+      setDialogError('Пожалуйста, заполните все поля');
+      return;
+    }
+    try {
+      await api.put(`/admin/movies/${editingMovie.id}`, {
+        title: editingMovie.title,
+        description: editingMovie.description,
+        genre: editingMovie.genre,
+        duration: parseInt(editingMovie.duration),
+        ageRating: editingMovie.ageRating
+      });
+      setOpenEditMovie(false);
+      fetchData();
+    } catch (err) { setDialogError('Ошибка обновления фильма'); }
   };
 
   const handleAddHall = async () => {
@@ -256,7 +289,10 @@ export default function AdminPanel() {
                         <TableCell sx={cellSx}>{movie.duration} мин.</TableCell>
                         <TableCell sx={cellSx}>{movie.ageRating}</TableCell>
                         <TableCell align="right">
-                          <IconButton color="error" onClick={() => handleDelete('admin/movies', movie.id, setMovies, movies)}><Trash2 size={20} /></IconButton>
+                          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 0.5 }}>
+                            <IconButton color="primary" onClick={() => handleOpenEditMovie(movie)}><Pencil size={20} /></IconButton>
+                            <IconButton color="error" onClick={() => handleDelete('admin/movies', movie.id, setMovies, movies)}><Trash2 size={20} /></IconButton>
+                          </Box>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -368,6 +404,24 @@ export default function AdminPanel() {
         <DialogActions>
           <Button onClick={() => setOpenMovie(false)}>Отмена</Button>
           <Button variant="contained" onClick={handleAddMovie}>Добавить</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={openEditMovie} onClose={() => setOpenEditMovie(false)} maxWidth="sm" fullWidth>
+        <DialogTitle sx={{ color: 'text.primary', transition: 'color 0.3s ease' }}>Редактировать фильм</DialogTitle>
+        <DialogContent>
+          {dialogError && <Alert severity="warning" sx={{ mb: 2 }}>{dialogError}</Alert>}
+          <Stack spacing={2} sx={{ mt: 1 }}>
+            <TextField label="Название" fullWidth value={editingMovie.title} onChange={(e) => setEditingMovie({...editingMovie, title: e.target.value})} sx={noAsteriskSx} />
+            <TextField label="Описание" fullWidth multiline rows={3} value={editingMovie.description} onChange={(e) => setEditingMovie({...editingMovie, description: e.target.value})} sx={noAsteriskSx} />
+            <TextField label="Жанр" fullWidth value={editingMovie.genre} onChange={(e) => setEditingMovie({...editingMovie, genre: e.target.value})} sx={noAsteriskSx} />
+            <TextField label="Длительность (мин)" type="number" fullWidth value={editingMovie.duration} onChange={(e) => setEditingMovie({...editingMovie, duration: e.target.value})} sx={noAsteriskSx} />
+            <TextField label="Возрастной рейтинг" fullWidth value={editingMovie.ageRating} onChange={(e) => setEditingMovie({...editingMovie, ageRating: e.target.value})} sx={noAsteriskSx} />
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenEditMovie(false)}>Отмена</Button>
+          <Button variant="contained" onClick={handleEditMovie}>Сохранить</Button>
         </DialogActions>
       </Dialog>
 

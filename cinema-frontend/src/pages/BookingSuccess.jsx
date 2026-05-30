@@ -38,7 +38,6 @@ export default function BookingSuccess() {
           На главную
         </Button>
 
-        {/* Билет */}
         <Box sx={{
           width: '100%',
           bgcolor: 'background.paper',
@@ -48,7 +47,6 @@ export default function BookingSuccess() {
           position: 'relative',
           transition: 'background-color 0.3s ease, border-color 0.3s ease',
         }}>
-          {/* Верхняя часть билета */}
           <Box sx={{ pt: 5, pb: 4, px: 4, textAlign: 'center' }}>
             <Chip 
               label="Бронирование подтверждено" 
@@ -67,10 +65,8 @@ export default function BookingSuccess() {
             </Typography>
           </Box>
 
-          {/* Линия отрыва с вырезами */}
           <Box sx={{ position: 'relative', px: 4 }}>
             <Box sx={{ borderTop: '2px dashed', borderColor: 'divider', transition: 'border-color 0.3s ease' }} />
-            {/* Левый вырез */}
             <Box sx={{
               position: 'absolute',
               top: -16,
@@ -81,7 +77,6 @@ export default function BookingSuccess() {
               borderRadius: '50%',
               transition: 'background-color 0.3s ease'
             }} />
-            {/* Правый вырез */}
             <Box sx={{
               position: 'absolute',
               top: -16,
@@ -94,7 +89,6 @@ export default function BookingSuccess() {
             }} />
           </Box>
 
-          {/* Нижняя часть билета (Детали) */}
           <Box sx={{ pt: 4, pb: 3, px: 4 }}>
             <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3, mb: 4 }}>
               <DetailItem icon={<Calendar size={20} />} text={formatDate(startTime)} />
@@ -103,7 +97,6 @@ export default function BookingSuccess() {
               <DetailItem icon={<Ticket size={20} />} text={formattedSeats || 'Не указаны'} />
             </Box>
 
-            {/* Итого */}
             <Box sx={{ 
               display: 'flex', 
               justifyContent: 'space-between', 
@@ -122,7 +115,6 @@ export default function BookingSuccess() {
             </Box>
           </Box>
 
-          {/* Кнопки */}
           <Box sx={{ px: 4, pb: 4, pt: 1, display: 'flex', gap: 2 }}>
             <Button 
               fullWidth 

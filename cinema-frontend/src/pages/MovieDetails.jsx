@@ -76,7 +76,6 @@ export default function MovieDetails() {
           Назад к афише
         </Button>
 
-        {/* Информация о фильме */}
         <Box sx={{ mb: 6 }}>
           <Typography variant="h4" fontWeight={700} color="text.primary" sx={{ mb: 1.5, transition: 'color 0.3s ease' }}>
             {movie.title}
@@ -121,7 +120,6 @@ export default function MovieDetails() {
           )}
         </Box>
 
-        {/* Список сеансов */}
         <Typography variant="h5" fontWeight={700} color="text.primary" sx={{ mb: 3, transition: 'color 0.3s ease' }}>
           Расписание сеансов
         </Typography>

@@ -54,6 +54,11 @@ public class AdminController {
         return ResponseEntity.ok(movieService.getAllMovies());
     }
 
+    @PutMapping("/movies/{id}")
+    public ResponseEntity<Movie> updateMovie(@PathVariable Long id, @RequestBody MovieDTO movieDTO) {
+        return ResponseEntity.ok(movieService.updateMovie(id, movieDTO));
+    }
+
     @DeleteMapping("/movies/{id}")
     public ResponseEntity<String> deleteMovie(@PathVariable Long id) {
         movieService.deleteMovie(id);
