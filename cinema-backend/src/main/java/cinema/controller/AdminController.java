@@ -12,8 +12,10 @@ import cinema.service.CinemaHallService;
 import cinema.service.MovieService;
 import cinema.service.SessionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -63,6 +65,13 @@ public class AdminController {
     public ResponseEntity<String> deleteMovie(@PathVariable Long id) {
         movieService.deleteMovie(id);
         return ResponseEntity.ok("Фильм успешно удален");
+    }
+
+    @PostMapping(value = "/movies/{id}/cover", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Movie> uploadMovieCover(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file) {
+        return ResponseEntity.ok(movieService.uploadMovieCover(id, file));
     }
 
     @PostMapping("/sessions")

@@ -11,6 +11,7 @@ public class Movie {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
     @Column(nullable = false)
     private String title;
 
@@ -24,4 +25,7 @@ public class Movie {
 
     @Column(name = "age_rating")
     private String ageRating;
+
+    @Column(name = "cover_url")
+    private String coverUrl;
 }

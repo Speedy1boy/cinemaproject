@@ -8,6 +8,7 @@ import cinema.repository.SessionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -19,6 +20,7 @@ public class MovieService {
     private final MovieRepository movieRepository;
     private final SessionRepository sessionRepository;
     private final SessionService sessionService;
+    private final FileStorageService fileStorageService;
 
     public List<Movie> getAllMovies() {
         return movieRepository.findAll();
@@ -62,6 +64,17 @@ public class MovieService {
         movie.setGenre(dto.getGenre());
         movie.setDuration(dto.getDuration());
         movie.setAgeRating(dto.getAgeRating());
+
+        return movieRepository.save(movie);
+    }
+
+    public Movie uploadMovieCover(Long movieId, MultipartFile file) {
+        Movie movie = movieRepository.findById(movieId)
+                .orElseThrow(() -> new RuntimeException("Фильм не найден"));
+
+        String coverUrl = fileStorageService.saveFile(file);
+
+        movie.setCoverUrl(coverUrl);
 
         return movieRepository.save(movie);
     }
